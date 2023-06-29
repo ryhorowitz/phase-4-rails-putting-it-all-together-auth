@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  # before_action :authorize, only: :destroy
+  before_action :authorize, only: [:destroy]
 
   def create
     user = User.find_by(username: params[:username])
@@ -12,15 +12,11 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    if session[:user_id]
-      session.delete :user_id
-      head :no_content
-    else
-      render json: { error: "" }, status: :unauthorized
-    end
+    session.delete :user_id
+    head :no_content
   end
 
-  # def authorize
-  #   return render json: { error: "Not_authorized" }, status: :unauthorized unless session.include? :user_id
-  # end
+  def authorize
+    return render json: { error: "Not_authorized" }, status: :unauthorized unless session.include? :user_id
+  end
 end
