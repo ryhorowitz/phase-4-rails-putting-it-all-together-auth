@@ -3,18 +3,18 @@ class RecipesController < ApplicationController
 
   def index
     recipes = find_user.recipes
+    # byebug
     render json: recipes, status: :ok
   end
 
   def create
     recipe = find_user.recipes.create(recipe_params)
-    # byebug
     # #<Recipe id: nil, title: nil, instructions: "This is too short", minutes_to_complete: 10, user_id: 1, created_at: nil, updated_at: nil>
     #  it's still creating a new recipe with ^^^^
-    if recipe
+    if recipe.valid?
       render json: recipe, status: :created
     else
-      render json: { errors: recipes.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: recipe.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -29,6 +29,6 @@ class RecipesController < ApplicationController
   end
 
   def authorize
-    return render json: { error: "Not_authorized" }, status: :unauthorized unless session.include? :user_id
+    return render json: { errors: ["Not_authorized"] }, status: :unauthorized unless session.include? :user_id
   end
 end
